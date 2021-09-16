@@ -22,9 +22,7 @@ def distance(x1,y1,x2,y2):
 
 def resolve_collision(particle1, particle2):
   dst = distance(particle1.x, particle1.y, particle2.x, particle2.y)
-  #angle = math.atan2(ydiff, xdiff)
-  #x, y = rotatevec(xdiff, ydiff, angle())
-  #TODO Fix this thing
+  #TODO Make this use the one dimensional newton's equation
   if dst < particle1.radius + particle2.radius:
     return particle2.velocity
   else:
@@ -38,6 +36,7 @@ class Ball():
     self.radius = radius
     self.color = color
   def update(self,particles):
+    
     if self.y-self.radius<0 or self.y+self.radius>height:
       self.velocity[1] = -self.velocity[1]
     if self.x+self.radius>width or self.x-self.radius<0:
@@ -47,13 +46,15 @@ class Ball():
     for i in particles:
         if self != i:
             self.velocity = resolve_collision(self, i)
+    return self
     
   def draw(self):
     pygame.draw.circle(screen, self.color, (self.x, self.y), self.radius, 10)
 
 particles = []
-for i in range(100):
-  particles.append(Ball(random()*width,random()*height,random()-0.5*2,random()-0.5*2,10,(255,255,0)))
+updated_particles = []
+for i in range(20):
+  particles.append(Ball(random()*width,random()*height,random()-0.5,random()-0.5*2,10,(255,255,0)))
 # Game loop.
 while True:
   screen.fill((0, 0, 0))
@@ -64,11 +65,12 @@ while True:
       sys.exit()
   
   # Update.
+  #TODO make this work
   for particle in particles:
-    particle.update(particles)
+    updated_particles.append(particle.update(particles))
     #Draw all particles
     particle.draw()
-
-  # Draw.
+  particles = updated_particles
+  updated_particles = []
 
   pygame.display.flip()
